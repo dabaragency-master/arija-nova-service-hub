@@ -41,7 +41,7 @@ function ClientDetail() {
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const { error } = await supabase.from("clients").update(formToClient(new FormData(e.currentTarget))).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["clients"] });
     setEditOpen(false);
   }
@@ -53,7 +53,7 @@ function ClientDetail() {
       client_id: id, brand: g("brand"), model: g("model")!, serial_number: g("serial_number"),
       location: g("location"), installed_at: g("installed_at"), next_service_at: g("next_service_at"),
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["clients", id] });
     setDevOpen(false);
   }

@@ -17,7 +17,7 @@ export function ClientFields({ c }: { c?: Record<string, string | null> }) {
       {f("oib", "OIB")}
       <div className="space-y-1.5">
         <Label>Napomena</Label>
-        <Textarea name="notes" defaultValue={c?.notes ?? ""} rows={2} />
+        <Textarea name="notes" defaultValue={c?.["notes"] ?? ""} rows={2} />
       </div>
     </>
   );

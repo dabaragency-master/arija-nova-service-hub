@@ -39,7 +39,7 @@ export function NewOrderDialog({ clientId, trigger }: { clientId?: string; trigg
       assigned_to,
       status: assigned_to ? "dodijeljen" : "novi",
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Radni nalog kreiran");
     qc.invalidateQueries({ queryKey: ["orders"] });
     setOpen(false);

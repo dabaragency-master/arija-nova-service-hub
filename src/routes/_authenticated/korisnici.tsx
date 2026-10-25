@@ -31,7 +31,7 @@ function Users() {
   async function setRole(userId: string, role: AppRole) {
     await supabase.from("user_roles").delete().eq("user_id", userId);
     const { error } = await supabase.from("user_roles").insert({ user_id: userId, role });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Uloga promijenjena");
     qc.invalidateQueries({ queryKey: ["users"] });
   }

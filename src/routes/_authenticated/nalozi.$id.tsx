@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Camera, FileDown, MapPin, Phone, Play, CheckCircle2, Trash2, Plus } from "lucide-react";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/auth";
 import { fetchMonters } from "@/lib/queries";
@@ -91,9 +92,9 @@ function OrderDetail() {
   const canEdit = me.isStaff || o.assigned_to === me.userId;
   const refresh = () => qc.invalidateQueries({ queryKey: ["orders"] });
 
-  async function update(patch: Record<string, unknown>, msg?: string) {
+  async function update(patch: TablesUpdate<"work_orders">, msg?: string) {
     const { error } = await supabase.from("work_orders").update(patch).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (msg) toast.success(msg);
     refresh();
   }
@@ -104,7 +105,7 @@ function OrderDetail() {
     const { error } = await supabase
       .from("work_order_materials")
       .insert({ work_order_id: id, name: mat.name, quantity: Number(mat.quantity) || 1, unit: mat.unit });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setMat({ name: "", quantity: "1", unit: "kom" });
     refresh();
   }
@@ -282,7 +283,7 @@ function OrderDetail() {
         {photos.length ? (
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
             {photos.map((p) => (
-              <a key={p.id} href={p.url} target="_blank" rel="noreferrer" className="aspect-square overflow-hidden rounded-lg bg-muted">
+              <a key={p.id} href={p.url ?? undefined} target="_blank" rel="noreferrer" className="aspect-square overflow-hidden rounded-lg bg-muted">
                 {p.url && <img src={p.url} alt="Fotografija s terena" loading="lazy" className="h-full w-full object-cover" />}
               </a>
             ))}
