@@ -14,16 +14,310 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          oib: string | null
+          phone: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          oib?: string | null
+          phone?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          oib?: string | null
+          phone?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      devices: {
+        Row: {
+          brand: string | null
+          client_id: string
+          created_at: string
+          id: string
+          installed_at: string | null
+          location: string | null
+          model: string
+          next_service_at: string | null
+          serial_number: string | null
+        }
+        Insert: {
+          brand?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          installed_at?: string | null
+          location?: string | null
+          model: string
+          next_service_at?: string | null
+          serial_number?: string | null
+        }
+        Update: {
+          brand?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          installed_at?: string | null
+          location?: string | null
+          model?: string
+          next_service_at?: string | null
+          serial_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      work_order_materials: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          quantity: number
+          unit: string
+          work_order_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          quantity?: number
+          unit?: string
+          work_order_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          quantity?: number
+          unit?: string
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_materials_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_order_photos: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          uploaded_by: string | null
+          work_order_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          uploaded_by?: string | null
+          work_order_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          uploaded_by?: string | null
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_photos_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_orders: {
+        Row: {
+          address: string | null
+          assigned_to: string | null
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          device_id: string | null
+          hours: number | null
+          id: string
+          number: number
+          scheduled_at: string | null
+          signature: string | null
+          signed_by: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          title: string
+          type: Database["public"]["Enums"]["order_type"]
+          work_done: string | null
+        }
+        Insert: {
+          address?: string | null
+          assigned_to?: string | null
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          device_id?: string | null
+          hours?: number | null
+          id?: string
+          number?: number
+          scheduled_at?: string | null
+          signature?: string | null
+          signed_by?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          title: string
+          type?: Database["public"]["Enums"]["order_type"]
+          work_done?: string | null
+        }
+        Update: {
+          address?: string | null
+          assigned_to?: string | null
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          device_id?: string | null
+          hours?: number | null
+          id?: string
+          number?: number
+          scheduled_at?: string | null
+          signature?: string | null
+          signed_by?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["order_type"]
+          work_done?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_orders_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_client: {
+        Args: { _client_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_access_order: {
+        Args: { _order_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_edit_order: {
+        Args: { _order_id: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_internal: { Args: { _user_id: string }; Returns: boolean }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "prodavac" | "monter" | "klijent"
+      order_status: "novi" | "dodijeljen" | "u_tijeku" | "zavrsen" | "otkazan"
+      order_type: "montaza" | "servis" | "prodaja" | "reklamacija"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +444,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "prodavac", "monter", "klijent"],
+      order_status: ["novi", "dodijeljen", "u_tijeku", "zavrsen", "otkazan"],
+      order_type: ["montaza", "servis", "prodaja", "reklamacija"],
+    },
   },
 } as const
