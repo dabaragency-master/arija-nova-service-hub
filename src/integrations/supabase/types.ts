@@ -16,11 +16,15 @@ export type Database = {
     Tables: {
       clients: {
         Row: {
+          access_notes: string | null
           address: string | null
           city: string | null
+          client_type: string
           created_at: string
           created_by: string | null
           email: string | null
+          floor: string | null
+          has_lift: boolean | null
           id: string
           name: string
           notes: string | null
@@ -29,11 +33,15 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          access_notes?: string | null
           address?: string | null
           city?: string | null
+          client_type?: string
           created_at?: string
           created_by?: string | null
           email?: string | null
+          floor?: string | null
+          has_lift?: boolean | null
           id?: string
           name: string
           notes?: string | null
@@ -42,11 +50,15 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          access_notes?: string | null
           address?: string | null
           city?: string | null
+          client_type?: string
           created_at?: string
           created_by?: string | null
           email?: string | null
+          floor?: string | null
+          has_lift?: boolean | null
           id?: string
           name?: string
           notes?: string | null
@@ -63,10 +75,13 @@ export type Database = {
           created_at: string
           id: string
           installed_at: string | null
+          last_service_at: string | null
           location: string | null
           model: string
           next_service_at: string | null
+          refrigerant: string | null
           serial_number: string | null
+          warranty_until: string | null
         }
         Insert: {
           brand?: string | null
@@ -74,10 +89,13 @@ export type Database = {
           created_at?: string
           id?: string
           installed_at?: string | null
+          last_service_at?: string | null
           location?: string | null
           model: string
           next_service_at?: string | null
+          refrigerant?: string | null
           serial_number?: string | null
+          warranty_until?: string | null
         }
         Update: {
           brand?: string | null
@@ -85,10 +103,13 @@ export type Database = {
           created_at?: string
           id?: string
           installed_at?: string | null
+          last_service_at?: string | null
           location?: string | null
           model?: string
           next_service_at?: string | null
+          refrigerant?: string | null
           serial_number?: string | null
+          warranty_until?: string | null
         }
         Relationships: [
           {
@@ -99,6 +120,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      materials_catalog: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          unit?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -179,6 +221,7 @@ export type Database = {
       }
       work_order_photos: {
         Row: {
+          category: string
           created_at: string
           id: string
           path: string
@@ -186,6 +229,7 @@ export type Database = {
           work_order_id: string
         }
         Insert: {
+          category?: string
           created_at?: string
           id?: string
           path: string
@@ -193,6 +237,7 @@ export type Database = {
           work_order_id: string
         }
         Update: {
+          category?: string
           created_at?: string
           id?: string
           path?: string
@@ -213,6 +258,7 @@ export type Database = {
         Row: {
           address: string | null
           assigned_to: string | null
+          checklist: Json
           client_id: string
           completed_at: string | null
           created_at: string
@@ -233,6 +279,7 @@ export type Database = {
         Insert: {
           address?: string | null
           assigned_to?: string | null
+          checklist?: Json
           client_id: string
           completed_at?: string | null
           created_at?: string
@@ -253,6 +300,7 @@ export type Database = {
         Update: {
           address?: string | null
           assigned_to?: string | null
+          checklist?: Json
           client_id?: string
           completed_at?: string | null
           created_at?: string

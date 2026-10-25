@@ -8,6 +8,13 @@
       "when": 1792939140644,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792940133457,
+      "tag": "0001_crm_upgrades",
+      "breakpoints": true
     }
   ]
 }
