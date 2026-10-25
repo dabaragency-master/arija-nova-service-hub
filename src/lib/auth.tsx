@@ -45,6 +45,7 @@ export function useMe() {
     isAdmin: has("admin"),
     isStaff: has("admin", "prodavac"),
     isMonter: has("monter"),
+    isInternal: has("admin", "prodavac", "monter"),
     isKlijent: !has("admin", "prodavac", "monter"),
   };
 }

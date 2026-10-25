@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Camera, FileDown, MapPin, Phone, Play, CheckCircle2, Trash2, Plus } from "lucide-react";
+import { ArrowLeft, Camera, FileDown, MapPin, Phone, Play, CheckCircle2, Trash2, Plus, MessageCircle, Mic } from "lucide-react";
+import { PHOTO_CATEGORIES, defaultChecklist, mapsLink, serviceDoneUpdate, waLink, type ChecklistItem, type PhotoCategory } from "@/lib/crm";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/auth";
@@ -71,12 +72,34 @@ function OrderDetail() {
     },
   });
   const monters = useQuery({ queryKey: ["monters"], enabled: me.isStaff, queryFn: fetchMonters });
+  const catalog = useQuery({
+    queryKey: ["materials-catalog"],
+    enabled: me.isInternal,
+    queryFn: async () => (await supabase.from("materials_catalog").select("*").order("name")).data ?? [],
+  });
 
   const [workDone, setWorkDone] = useState("");
   const [hours, setHours] = useState("");
   const [signedBy, setSignedBy] = useState("");
   const [mat, setMat] = useState({ name: "", quantity: "1", unit: "kom" });
   const [uploading, setUploading] = useState(false);
+  const [photoCat, setPhotoCat] = useState<PhotoCategory>("prije");
+  const [listening, setListening] = useState(false);
+
+  function dictate() {
+    const W = window as unknown as { SpeechRecognition?: new () => SpeechRec; webkitSpeechRecognition?: new () => SpeechRec };
+    const SR = W.SpeechRecognition ?? W.webkitSpeechRecognition;
+    if (!SR) { toast.error("Diktiranje nije podržano u ovom pregledniku."); return; }
+    const r = new SR();
+    r.lang = "hr-HR";
+    r.onresult = (e) => {
+      const text = e.results[0]?.[0]?.transcript ?? "";
+      setWorkDone((w) => (w ? w + " " : "") + text);
+    };
+    r.onend = () => setListening(false);
+    setListening(true);
+    r.start();
+  }
 
   useEffect(() => {
     if (q.data) {
@@ -91,6 +114,20 @@ function OrderDetail() {
   const { o, materials, photos, monter } = q.data;
   const canEdit = me.isStaff || o.assigned_to === me.userId;
   const refresh = () => qc.invalidateQueries({ queryKey: ["orders"] });
+  const saved = (o.checklist as unknown as ChecklistItem[] | null) ?? [];
+  const checklist = saved.length ? saved : defaultChecklist(o.type);
+
+  async function toggleCheck(i: number) {
+    const next = checklist.map((c, j) => (j === i ? { ...c, done: !c.done } : c));
+    await update({ checklist: next as unknown as NonNullable<TablesUpdate<"work_orders">["checklist"]> });
+  }
+
+  async function finish() {
+    await update({ status: "zavrsen", completed_at: new Date().toISOString(), work_done: workDone, hours: hours ? Number(hours) : null }, "Nalog završen");
+    if (o.device_id && (o.type === "servis" || o.type === "montaza")) {
+      await supabase.from("devices").update(serviceDoneUpdate(new Date().toISOString().slice(0, 10))).eq("id", o.device_id);
+    }
+  }
 
   async function update(patch: TablesUpdate<"work_orders">, msg?: string) {
     const { error } = await supabase.from("work_orders").update(patch).eq("id", id);
@@ -120,7 +157,7 @@ function OrderDetail() {
         toast.error(up.error.message);
         continue;
       }
-      await supabase.from("work_order_photos").insert({ work_order_id: id, path });
+      await supabase.from("work_order_photos").insert({ work_order_id: id, path, category: photoCat });
     }
     setUploading(false);
     refresh();
@@ -133,6 +170,7 @@ function OrderDetail() {
       client: o.clients,
       monter,
       materials: materials.map((m) => ({ ...m, quantity: Number(m.quantity) })),
+      checklist,
     });
   }
 
@@ -155,13 +193,22 @@ function OrderDetail() {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {addr && (
-            <a className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1.5 text-sm font-semibold" target="_blank" rel="noreferrer" href={`https://maps.google.com/?q=${encodeURIComponent(addr)}`}>
-              <MapPin className="h-4 w-4" /> {addr}
+            <a className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1.5 text-sm font-semibold" target="_blank" rel="noreferrer" href={mapsLink(addr)}>
+              <MapPin className="h-4 w-4" /> Navigacija: {addr}
             </a>
           )}
           {o.clients?.phone && (
             <a className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1.5 text-sm font-semibold" href={`tel:${o.clients.phone}`}>
               <Phone className="h-4 w-4" /> {o.clients.phone}
+            </a>
+          )}
+          {o.clients?.phone && canEdit && (
+            <a
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1.5 text-sm font-semibold"
+              target="_blank" rel="noreferrer"
+              href={waLink(o.clients.phone, `Poštovani, ovdje Arija Nova. Monter je na putu i stiže za otprilike 20 minuta (nalog ${orderNo(o.number)}).`)}
+            >
+              <MessageCircle className="h-4 w-4" /> Javi „na putu”
             </a>
           )}
         </div>
@@ -178,7 +225,7 @@ function OrderDetail() {
           )}
           {o.status === "u_tijeku" && (
             <Button
-              onClick={() => update({ status: "zavrsen", completed_at: new Date().toISOString(), work_done: workDone, hours: hours ? Number(hours) : null }, "Nalog završen")}
+              onClick={finish}
               className="bg-success font-bold text-success-foreground hover:bg-success/90"
             >
               <CheckCircle2 className="h-4 w-4" /> Završi nalog
@@ -221,7 +268,29 @@ function OrderDetail() {
         </Card>
       )}
 
-      <Card title="Izvršeni rad">
+      {checklist.length > 0 && (
+        <Card title={`Kontrolna lista (${checklist.filter((c) => c.done).length}/${checklist.length})`}>
+          <ul className="space-y-1">
+            {checklist.map((c, i) => (
+              <li key={c.label}>
+                <label className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-sm hover:bg-muted">
+                  <input type="checkbox" className="h-5 w-5 accent-primary" checked={c.done} disabled={!canEdit} onChange={() => toggleCheck(i)} />
+                  <span className={c.done ? "text-muted-foreground line-through" : ""}>{c.label}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      <Card
+        title="Izvršeni rad"
+        action={canEdit && (
+          <Button variant="secondary" size="sm" onClick={dictate} disabled={listening}>
+            <Mic className="h-4 w-4" /> {listening ? "Slušam…" : "Diktiraj"}
+          </Button>
+        )}
+      >
         {canEdit ? (
           <div className="space-y-3">
             <Textarea rows={4} value={workDone} onChange={(e) => setWorkDone(e.target.value)} placeholder="Što je napravljeno…" />
@@ -260,33 +329,64 @@ function OrderDetail() {
           </ul>
         ) : <p className="text-sm text-muted-foreground">Nema upisanog materijala.</p>}
         {canEdit && (
-          <form onSubmit={addMaterial} className="mt-3 flex gap-2">
-            <Input className="flex-1" placeholder="npr. Bakrena cijev 1/4" value={mat.name} onChange={(e) => setMat({ ...mat, name: e.target.value })} />
-            <Input className="w-20" type="number" step="0.01" value={mat.quantity} onChange={(e) => setMat({ ...mat, quantity: e.target.value })} />
-            <select className={sel + " w-20"} value={mat.unit} onChange={(e) => setMat({ ...mat, unit: e.target.value })}>
-              {["kom", "m", "kg", "l", "set"].map((u) => <option key={u}>{u}</option>)}
-            </select>
-            <Button size="icon" aria-label="Dodaj"><Plus className="h-4 w-4" /></Button>
-          </form>
+          <div className="mt-3 space-y-2">
+            {!!catalog.data?.length && (
+              <select
+                className={sel}
+                value=""
+                onChange={(e) => {
+                  const c = catalog.data?.find((x) => x.id === e.target.value);
+                  if (c) setMat({ ...mat, name: c.name, unit: c.unit });
+                }}
+              >
+                <option value="">Odaberi iz šifarnika…</option>
+                {catalog.data.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.unit})</option>)}
+              </select>
+            )}
+            <form onSubmit={addMaterial} className="flex gap-2">
+              <Input className="flex-1" placeholder="ili upiši ručno" value={mat.name} onChange={(e) => setMat({ ...mat, name: e.target.value })} />
+              <Input className="w-20" type="number" step="0.01" value={mat.quantity} onChange={(e) => setMat({ ...mat, quantity: e.target.value })} />
+              <select className={sel + " w-20"} value={mat.unit} onChange={(e) => setMat({ ...mat, unit: e.target.value })}>
+                {["kom", "m", "kg", "l", "set"].map((u) => <option key={u}>{u}</option>)}
+              </select>
+              <Button size="icon" aria-label="Dodaj"><Plus className="h-4 w-4" /></Button>
+            </form>
+          </div>
         )}
       </Card>
 
       <Card
         title="Fotografije"
         action={canEdit && (
-          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground">
-            <Camera className="h-4 w-4" /> {uploading ? "Učitavam…" : "Dodaj"}
-            <input type="file" accept="image/*" capture="environment" multiple hidden onChange={(e) => upload(e.target.files)} />
-          </label>
+          <div className="flex items-center gap-2">
+            <select aria-label="Vrsta fotografije" className="h-8 rounded-md border border-input bg-card px-2 text-sm" value={photoCat} onChange={(e) => setPhotoCat(e.target.value as PhotoCategory)}>
+              {Object.entries(PHOTO_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground">
+              <Camera className="h-4 w-4" /> {uploading ? "Učitavam…" : "Dodaj"}
+              <input type="file" accept="image/*" capture="environment" multiple hidden onChange={(e) => upload(e.target.files)} />
+            </label>
+          </div>
         )}
       >
         {photos.length ? (
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {photos.map((p) => (
-              <a key={p.id} href={p.url ?? undefined} target="_blank" rel="noreferrer" className="aspect-square overflow-hidden rounded-lg bg-muted">
-                {p.url && <img src={p.url} alt="Fotografija s terena" loading="lazy" className="h-full w-full object-cover" />}
-              </a>
-            ))}
+          <div className="space-y-4">
+            {(Object.keys(PHOTO_CATEGORIES) as PhotoCategory[]).map((cat) => {
+              const list = photos.filter((p) => (p.category ?? "ostalo") === cat);
+              if (!list.length) return null;
+              return (
+                <div key={cat}>
+                  <div className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">{PHOTO_CATEGORIES[cat]}</div>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                    {list.map((p) => (
+                      <a key={p.id} href={p.url ?? undefined} target="_blank" rel="noreferrer" className="aspect-square overflow-hidden rounded-lg bg-muted">
+                        {p.url && <img src={p.url} alt={PHOTO_CATEGORIES[cat]} loading="lazy" className="h-full w-full object-cover" />}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : <p className="text-sm text-muted-foreground">Nema fotografija.</p>}
       </Card>
@@ -311,3 +411,10 @@ function OrderDetail() {
     </div>
   );
 }
+
+type SpeechRec = {
+  lang: string;
+  start: () => void;
+  onresult: (e: { results: { [i: number]: { [j: number]: { transcript: string } } } }) => void;
+  onend: () => void;
+};
