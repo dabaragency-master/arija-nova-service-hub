@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ClipboardList, LayoutDashboard, LogOut, ShieldCheck, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, LayoutDashboard, LogOut, ShieldCheck, Users, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
@@ -13,10 +13,12 @@ export function AppShell() {
 
   const nav = [
     { to: "/dashboard", label: "Pregled", icon: LayoutDashboard, show: true },
-    { to: "/nalozi", label: me.isKlijent ? "Moji nalozi" : "Radni nalozi", icon: ClipboardList, show: true },
+    { to: "/nalozi", label: me.isKlijent ? "Moji nalozi" : "Nalozi", icon: ClipboardList, show: true },
+    { to: "/raspored", label: "Raspored", icon: CalendarDays, show: me.isInternal },
     { to: "/klijenti", label: "Klijenti", icon: Users, show: me.isStaff },
+    { to: "/servisi", label: "Servisi", icon: Wrench, show: me.isStaff },
     { to: "/korisnici", label: "Korisnici", icon: ShieldCheck, show: me.isAdmin },
-  ].filter((n) => n.show) as { to: "/dashboard" | "/nalozi" | "/klijenti" | "/korisnici"; label: string; icon: typeof Users }[];
+  ].filter((n) => n.show) as { to: "/dashboard" | "/nalozi" | "/raspored" | "/klijenti" | "/servisi" | "/korisnici"; label: string; icon: typeof Users }[];
 
   async function signOut() {
     await qc.cancelQueries();
