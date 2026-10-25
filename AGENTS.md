@@ -14,5 +14,6 @@
 - First signed-up user becomes admin, later sign-ups become klijent and are auto-linked to a `clients` row by matching email (trigger `handle_new_user`).
 - Signed-in pages live under `src/routes/_authenticated/` and read data client-side via the browser client so RLS applies.
 - Order photos go to the private `order-photos` bucket under `<order_id>/...`; storage policies key off that folder.
-- Order PDFs are generated client-side with jsPDF (diacritics transliterated because default fonts lack them).
+- Order PDFs are generated client-side with jsPDF using Noto Sans loaded from public/fonts so Croatian diacritics render.
 - PWA is manifest-only (installable, no service worker) until offline support is explicitly requested.
+- Yearly service and due-window rules live in src/lib/crm.ts (covered by src/test/crm.test.ts) so UI and tests share one source.
