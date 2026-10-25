@@ -38,7 +38,7 @@ function Users() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeader title="Korisnici" sub="Novi korisnici dobivaju ulogu klijenta. Ovdje im dodijelite ulogu monterа, prodavača ili administratora." />
+      <PageHeader title="Korisnici" sub="Novi korisnici dobivaju ulogu klijenta. Ovdje im dodijelite ulogu montera, prodavača ili administratora." />
       <div className="overflow-hidden rounded-2xl bg-card shadow-card">
         {q.data?.map((u) => (
           <div key={u.id} className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3.5 last:border-0">

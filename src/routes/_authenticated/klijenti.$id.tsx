@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ClientFields, formToClient } from "./klijenti.index";
+import { ClientFields, formToClient } from "@/components/ClientFields";
 
 export const Route = createFileRoute("/_authenticated/klijenti/$id")({
   head: () => ({ meta: [{ title: "Klijent — Arija Nova CRM" }] }),
