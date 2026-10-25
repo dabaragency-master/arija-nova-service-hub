@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/auth";
+import { fetchMonters } from "@/lib/queries";
+import { fetchDueDevices } from "./servisi";
 import { PageHeader } from "@/components/AppShell";
 import { NewOrderDialog } from "@/components/OrderForm";
 import { ORDER_SELECT, OrderList, type OrderRow } from "@/components/OrderList";
@@ -13,14 +15,16 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
+type DashRow = OrderRow & { assigned_to: string | null; completed_at: string | null; hours: number | null };
+
 function Dashboard() {
   const me = useMe();
   const orders = useQuery({
     queryKey: ["orders", "all", me.userId],
     queryFn: async () => {
-      let q = supabase.from("work_orders").select(ORDER_SELECT).order("scheduled_at", { ascending: true, nullsFirst: false });
+      let q = supabase.from("work_orders").select(ORDER_SELECT + ", completed_at, hours").order("scheduled_at", { ascending: true, nullsFirst: false });
       if (me.isMonter && !me.isStaff) q = q.eq("assigned_to", me.userId!);
-      return ((await q).data ?? []) as unknown as OrderRow[];
+      return ((await q).data ?? []) as unknown as DashRow[];
     },
   });
   const clientsCount = useQuery({
@@ -78,6 +82,34 @@ function Dashboard() {
           </div>
         ))}
       </div>
+      {me.isStaff && (
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <Link to="/servisi" className="flex items-center gap-4 rounded-2xl bg-card p-5 shadow-card hover:ring-1 hover:ring-primary/30">
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-warning text-warning-foreground"><Wrench className="h-6 w-6" /></div>
+            <div>
+              <div className="text-3xl font-extrabold">{due.data?.length ?? 0}</div>
+              <div className="text-sm font-semibold text-muted-foreground">uređaja za godišnji servis</div>
+            </div>
+          </Link>
+          <div className="rounded-2xl bg-card p-5 shadow-card md:col-span-2">
+            <div className="mb-3 font-bold">Monteri — ovaj mjesec</div>
+            {perMonter.length ? (
+              <table className="w-full text-sm">
+                <thead className="text-left text-xs text-muted-foreground">
+                  <tr><th className="pb-2">Monter</th><th>Otvoreno</th><th>Montaže</th><th>Servisi</th><th>Sati</th></tr>
+                </thead>
+                <tbody>
+                  {perMonter.map((m) => (
+                    <tr key={m.id} className="border-t">
+                      <td className="py-2 font-semibold">{m.name}</td><td>{m.open}</td><td>{m.montaze}</td><td>{m.servisi}</td><td>{m.hours}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : <p className="text-sm text-muted-foreground">Još nema montera. Dodijelite ulogu u izborniku Korisnici.</p>}
+          </div>
+        </div>
+      )}
       <div className="mt-8 flex items-center justify-between">
         <h2 className="text-lg font-bold">{me.isKlijent ? "Vaši nalozi" : "Nadolazeći nalozi"}</h2>
         <Link to="/nalozi" className="text-sm font-semibold text-primary">Svi nalozi →</Link>
