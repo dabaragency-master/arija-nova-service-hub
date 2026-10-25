@@ -411,3 +411,10 @@ function OrderDetail() {
     </div>
   );
 }
+
+type SpeechRec = {
+  lang: string;
+  start: () => void;
+  onresult: (e: { results: { [i: number]: { [j: number]: { transcript: string } } } }) => void;
+  onend: () => void;
+};
