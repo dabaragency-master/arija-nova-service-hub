@@ -14,6 +14,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedKorisniciRouteImport } from './routes/_authenticated/korisnici'
+import { Route as AuthenticatedRasporedRouteImport } from './routes/_authenticated/raspored'
+import { Route as AuthenticatedServisiRouteImport } from './routes/_authenticated/servisi'
 import { Route as AuthenticatedKlijentiIndexRouteImport } from './routes/_authenticated/klijenti.index'
 import { Route as AuthenticatedKlijentiIdRouteImport } from './routes/_authenticated/klijenti.$id'
 import { Route as AuthenticatedNaloziIndexRouteImport } from './routes/_authenticated/nalozi.index'
@@ -41,6 +43,16 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 const AuthenticatedKorisniciRoute = AuthenticatedKorisniciRouteImport.update({
   id: '/korisnici',
   path: '/korisnici',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRasporedRoute = AuthenticatedRasporedRouteImport.update({
+  id: '/raspored',
+  path: '/raspored',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedServisiRoute = AuthenticatedServisiRouteImport.update({
+  id: '/servisi',
+  path: '/servisi',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedKlijentiIndexRoute =
@@ -71,6 +83,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/korisnici': typeof AuthenticatedKorisniciRoute
+  '/raspored': typeof AuthenticatedRasporedRoute
+  '/servisi': typeof AuthenticatedServisiRoute
   '/klijenti/$id': typeof AuthenticatedKlijentiIdRoute
   '/nalozi/$id': typeof AuthenticatedNaloziIdRoute
   '/klijenti/': typeof AuthenticatedKlijentiIndexRoute
@@ -81,6 +95,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/korisnici': typeof AuthenticatedKorisniciRoute
+  '/raspored': typeof AuthenticatedRasporedRoute
+  '/servisi': typeof AuthenticatedServisiRoute
   '/klijenti/$id': typeof AuthenticatedKlijentiIdRoute
   '/nalozi/$id': typeof AuthenticatedNaloziIdRoute
   '/klijenti': typeof AuthenticatedKlijentiIndexRoute
@@ -93,6 +109,8 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/korisnici': typeof AuthenticatedKorisniciRoute
+  '/_authenticated/raspored': typeof AuthenticatedRasporedRoute
+  '/_authenticated/servisi': typeof AuthenticatedServisiRoute
   '/_authenticated/klijenti/$id': typeof AuthenticatedKlijentiIdRoute
   '/_authenticated/nalozi/$id': typeof AuthenticatedNaloziIdRoute
   '/_authenticated/klijenti/': typeof AuthenticatedKlijentiIndexRoute
@@ -105,6 +123,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/korisnici'
+    | '/raspored'
+    | '/servisi'
     | '/klijenti/$id'
     | '/nalozi/$id'
     | '/klijenti/'
@@ -115,6 +135,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/korisnici'
+    | '/raspored'
+    | '/servisi'
     | '/klijenti/$id'
     | '/nalozi/$id'
     | '/klijenti'
@@ -126,6 +148,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/korisnici'
+    | '/_authenticated/raspored'
+    | '/_authenticated/servisi'
     | '/_authenticated/klijenti/$id'
     | '/_authenticated/nalozi/$id'
     | '/_authenticated/klijenti/'
@@ -175,6 +199,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKorisniciRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/raspored': {
+      id: '/_authenticated/raspored'
+      path: '/raspored'
+      fullPath: '/raspored'
+      preLoaderRoute: typeof AuthenticatedRasporedRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/servisi': {
+      id: '/_authenticated/servisi'
+      path: '/servisi'
+      fullPath: '/servisi'
+      preLoaderRoute: typeof AuthenticatedServisiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/klijenti/': {
       id: '/_authenticated/klijenti/'
       path: '/klijenti'
@@ -209,6 +247,8 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKorisniciRoute: typeof AuthenticatedKorisniciRoute
+  AuthenticatedRasporedRoute: typeof AuthenticatedRasporedRoute
+  AuthenticatedServisiRoute: typeof AuthenticatedServisiRoute
   AuthenticatedKlijentiIdRoute: typeof AuthenticatedKlijentiIdRoute
   AuthenticatedNaloziIdRoute: typeof AuthenticatedNaloziIdRoute
   AuthenticatedKlijentiIndexRoute: typeof AuthenticatedKlijentiIndexRoute
@@ -218,6 +258,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKorisniciRoute: AuthenticatedKorisniciRoute,
+  AuthenticatedRasporedRoute: AuthenticatedRasporedRoute,
+  AuthenticatedServisiRoute: AuthenticatedServisiRoute,
   AuthenticatedKlijentiIdRoute: AuthenticatedKlijentiIdRoute,
   AuthenticatedNaloziIdRoute: AuthenticatedNaloziIdRoute,
   AuthenticatedKlijentiIndexRoute: AuthenticatedKlijentiIndexRoute,
