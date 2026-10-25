@@ -93,7 +93,7 @@ function OrderDetail() {
     const r = new SR();
     r.lang = "hr-HR";
     r.onresult = (e) => {
-      const text = e.results[0][0].transcript;
+      const text = e.results[0]?.[0]?.transcript ?? "";
       setWorkDone((w) => (w ? w + " " : "") + text);
     };
     r.onend = () => setListening(false);
@@ -119,7 +119,7 @@ function OrderDetail() {
 
   async function toggleCheck(i: number) {
     const next = checklist.map((c, j) => (j === i ? { ...c, done: !c.done } : c));
-    await update({ checklist: next as unknown as TablesUpdate<"work_orders">["checklist"] });
+    await update({ checklist: next as unknown as NonNullable<TablesUpdate<"work_orders">["checklist"]> });
   }
 
   async function finish() {

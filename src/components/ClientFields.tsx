@@ -29,7 +29,7 @@ export function ClientFields({ c }: { c?: C }) {
         {f("floor", "Kat")}
         <div className="space-y-1.5">
           <Label>Lift</Label>
-          <select name="has_lift" defaultValue={c?.has_lift == null ? "" : String(c.has_lift)} className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm">
+          <select name="has_lift" defaultValue={c?.["has_lift"] == null ? "" : String(c["has_lift"])} className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm">
             <option value="">—</option><option value="true">Ima lift</option><option value="false">Nema lifta</option>
           </select>
         </div>

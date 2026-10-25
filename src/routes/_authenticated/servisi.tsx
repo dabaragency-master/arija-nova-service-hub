@@ -4,7 +4,8 @@ import { MessageCircle, Phone, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/auth";
 import { fmtDate } from "@/lib/labels";
-import { daysUntil, isServiceDue, nextServiceDate, waLink } from "@/lib/crm";
+import { daysUntil, waLink } from "@/lib/crm";
+import { fetchDueDevices } from "@/lib/queries";
 import { PageHeader } from "@/components/AppShell";
 import { NewOrderDialog } from "@/components/OrderForm";
 import { Button } from "@/components/ui/button";
@@ -13,14 +14,6 @@ export const Route = createFileRoute("/_authenticated/servisi")({
   head: () => ({ meta: [{ title: "Godišnji servisi — Arija Nova CRM" }] }),
   component: Services,
 });
-
-export async function fetchDueDevices() {
-  const { data } = await supabase.from("devices").select("*, clients(id, name, phone, city)");
-  return (data ?? [])
-    .map((d) => ({ ...d, next: nextServiceDate(d) }))
-    .filter((d) => isServiceDue(d.next))
-    .sort((a, b) => (a.next! < b.next! ? -1 : 1));
-}
 
 function Services() {
   const me = useMe();

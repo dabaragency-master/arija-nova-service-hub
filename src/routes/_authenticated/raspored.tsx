@@ -59,7 +59,7 @@ function Schedule() {
     <div className="mx-auto max-w-6xl">
       <PageHeader
         title={me.isStaff ? "Raspored montera" : "Moj raspored"}
-        sub={`${days[0].toLocaleDateString("hr-HR")} – ${days[6].toLocaleDateString("hr-HR")}`}
+        sub={`${days[0]!.toLocaleDateString("hr-HR")} – ${days[6]!.toLocaleDateString("hr-HR")}`}
         action={
           <div className="flex gap-2">
             <Button variant="outline" size="icon" aria-label="Prethodni tjedan" onClick={() => setOffset(offset - 1)}><ChevronLeft className="h-4 w-4" /></Button>
