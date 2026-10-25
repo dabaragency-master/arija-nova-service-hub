@@ -10,33 +10,132 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedKorisniciRouteImport } from './routes/_authenticated/korisnici'
+import { Route as AuthenticatedKlijentiIndexRouteImport } from './routes/_authenticated/klijenti.index'
+import { Route as AuthenticatedKlijentiIdRouteImport } from './routes/_authenticated/klijenti.$id'
+import { Route as AuthenticatedNaloziIndexRouteImport } from './routes/_authenticated/nalozi.index'
+import { Route as AuthenticatedNaloziIdRouteImport } from './routes/_authenticated/nalozi.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedKorisniciRoute = AuthenticatedKorisniciRouteImport.update({
+  id: '/korisnici',
+  path: '/korisnici',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedKlijentiIndexRoute =
+  AuthenticatedKlijentiIndexRouteImport.update({
+    id: '/klijenti/',
+    path: '/klijenti/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKlijentiIdRoute = AuthenticatedKlijentiIdRouteImport.update({
+  id: '/klijenti/$id',
+  path: '/klijenti/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNaloziIndexRoute =
+  AuthenticatedNaloziIndexRouteImport.update({
+    id: '/nalozi/',
+    path: '/nalozi/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedNaloziIdRoute = AuthenticatedNaloziIdRouteImport.update({
+  id: '/nalozi/$id',
+  path: '/nalozi/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/korisnici': typeof AuthenticatedKorisniciRoute
+  '/klijenti/$id': typeof AuthenticatedKlijentiIdRoute
+  '/nalozi/$id': typeof AuthenticatedNaloziIdRoute
+  '/klijenti/': typeof AuthenticatedKlijentiIndexRoute
+  '/nalozi/': typeof AuthenticatedNaloziIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/korisnici': typeof AuthenticatedKorisniciRoute
+  '/klijenti/$id': typeof AuthenticatedKlijentiIdRoute
+  '/nalozi/$id': typeof AuthenticatedNaloziIdRoute
+  '/klijenti': typeof AuthenticatedKlijentiIndexRoute
+  '/nalozi': typeof AuthenticatedNaloziIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/korisnici': typeof AuthenticatedKorisniciRoute
+  '/_authenticated/klijenti/$id': typeof AuthenticatedKlijentiIdRoute
+  '/_authenticated/nalozi/$id': typeof AuthenticatedNaloziIdRoute
+  '/_authenticated/klijenti/': typeof AuthenticatedKlijentiIndexRoute
+  '/_authenticated/nalozi/': typeof AuthenticatedNaloziIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/korisnici'
+    | '/klijenti/$id'
+    | '/nalozi/$id'
+    | '/klijenti/'
+    | '/nalozi/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/korisnici'
+    | '/klijenti/$id'
+    | '/nalozi/$id'
+    | '/klijenti'
+    | '/nalozi'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/korisnici'
+    | '/_authenticated/klijenti/$id'
+    | '/_authenticated/nalozi/$id'
+    | '/_authenticated/klijenti/'
+    | '/_authenticated/nalozi/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +147,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/korisnici': {
+      id: '/_authenticated/korisnici'
+      path: '/korisnici'
+      fullPath: '/korisnici'
+      preLoaderRoute: typeof AuthenticatedKorisniciRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/klijenti/': {
+      id: '/_authenticated/klijenti/'
+      path: '/klijenti'
+      fullPath: '/klijenti/'
+      preLoaderRoute: typeof AuthenticatedKlijentiIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/klijenti/$id': {
+      id: '/_authenticated/klijenti/$id'
+      path: '/klijenti/$id'
+      fullPath: '/klijenti/$id'
+      preLoaderRoute: typeof AuthenticatedKlijentiIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/nalozi/': {
+      id: '/_authenticated/nalozi/'
+      path: '/nalozi'
+      fullPath: '/nalozi/'
+      preLoaderRoute: typeof AuthenticatedNaloziIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/nalozi/$id': {
+      id: '/_authenticated/nalozi/$id'
+      path: '/nalozi/$id'
+      fullPath: '/nalozi/$id'
+      preLoaderRoute: typeof AuthenticatedNaloziIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKorisniciRoute: typeof AuthenticatedKorisniciRoute
+  AuthenticatedKlijentiIdRoute: typeof AuthenticatedKlijentiIdRoute
+  AuthenticatedNaloziIdRoute: typeof AuthenticatedNaloziIdRoute
+  AuthenticatedKlijentiIndexRoute: typeof AuthenticatedKlijentiIndexRoute
+  AuthenticatedNaloziIndexRoute: typeof AuthenticatedNaloziIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKorisniciRoute: AuthenticatedKorisniciRoute,
+  AuthenticatedKlijentiIdRoute: AuthenticatedKlijentiIdRoute,
+  AuthenticatedNaloziIdRoute: AuthenticatedNaloziIdRoute,
+  AuthenticatedKlijentiIndexRoute: AuthenticatedKlijentiIndexRoute,
+  AuthenticatedNaloziIndexRoute: AuthenticatedNaloziIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

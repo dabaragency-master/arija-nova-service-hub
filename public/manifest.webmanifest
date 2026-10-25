@@ -1,0 +1,13 @@
+{
+  "name": "Arija Nova CRM",
+  "short_name": "Arija Nova",
+  "description": "Radni nalozi, klijenti i teren za Arija Nova",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a408c",
+  "theme_color": "#0a408c",
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
